@@ -29,6 +29,8 @@ GameWindow::~GameWindow()
 	delete animation_rocket;
 }
 
+/*inicjalizacja okna i wczytywanie tekstur*/
+/*bool hacks = true; dla free-to-fly mode*/
 void GameWindow::init()
 {
 	std::string path = "resources/";
@@ -99,6 +101,7 @@ void GameWindow::init()
 
 }
 
+/*funckja restartu gry po crashu rakiety*/
 void GameWindow::restart_game()
 {
 	partciles.clear();
@@ -115,6 +118,7 @@ void GameWindow::changeRocketPosition(int delta_ticks) {
 	playable_rocket->physics.move(delta_ticks, true);
 }
 
+/*animowanie backgroundu*/
 void GameWindow::animate_background(bool anim_rocket) {
 	bg_physics.move(current_tick - last_tick);
 	if ((int)bg_physics.position[1] >= screen_height)
@@ -166,6 +170,7 @@ void GameWindow::animate_background(bool anim_rocket) {
 	}
 }
 
+/*Pokazuje co ma siê dziaæ w "menu" gry*/
 void GameWindow::show_start_game_window()
 {
 	SDL_Event event;
@@ -199,6 +204,7 @@ void GameWindow::show_start_game_window()
 	}
 }
 
+/*przebieg gry*/
 void GameWindow::begin() {
 	SDL_Event event;
 	current_tick = SDL_GetTicks();
@@ -293,6 +299,7 @@ void GameWindow::begin() {
 		manage_objects(&comets, &comet_textures, false, true);
 		if (game_state == GameState::Paused)
 		{
+			/*Pauza*/
 			SDL_Rect blur;
 			int blur_times = 4;
 			for (int i = 0; i < blur_times; i++) {
@@ -315,6 +322,7 @@ void GameWindow::begin() {
 	}
 }
 
+/*dorzucenie obiektów do listy*/
 void GameWindow::manage_objects(std::list<GameObject>* objects, std::list<std::shared_ptr<SDL_Texture>>* textures, bool should_force, bool apply_points, bool planet /*false*/) {
 	std::list<GameObject>::iterator it = objects->begin();
 	for (; it != objects->end(); it++) {
@@ -328,6 +336,7 @@ void GameWindow::manage_objects(std::list<GameObject>* objects, std::list<std::s
 	}
 }
 
+/*losowe rozmieszczenie planet w tle*/
 void GameWindow::randomize_object(GameObject * object, std::list<GameObject>* objects, std::list<std::shared_ptr<SDL_Texture>>* textures, bool planet /*false*/)
 {
 	double direction = random(0, 1) == 0 ? 1.0 : -1.0;
@@ -367,6 +376,7 @@ void GameWindow::randomize_object(GameObject * object, std::list<GameObject>* ob
 	object->texture = texture->get();
 }
 
+/*funkcja randomizuj¹ca*/
 int GameWindow::random(int min, int max)
 {
 	static std::random_device rd; // obtain a random number from hardware
@@ -380,6 +390,7 @@ int GameWindow::random(int min, int max)
 	return dist(eng);
 }
 
+/*funkcja zabezpieczaj¹ca przed wyrzucanime komet na t¹ sam¹ wysokoœæ jednoczeœnie*/
 bool GameWindow::there_is_a_object_on_this_height(int height, int object_height, std::list<GameObject>* objects)
 {
 	bool is_there_a_object_on_height = false;
@@ -400,6 +411,7 @@ bool GameWindow::there_is_a_object_on_this_height(int height, int object_height,
 	return is_there_a_object_on_height;
 }
 
+/*co siê dzieje jak kometa lub planeta wyjdzie za ekran*/
 bool GameWindow::object_is_out_of_screen(GameObject* object)
 {
 	int pom = 10;
@@ -415,6 +427,7 @@ bool GameWindow::object_is_out_of_screen(GameObject* object)
 	return out_of_screen;
 }
 
+/*rysowanie obiektów*/
 void GameWindow::draw_objects(std::list<GameObject>* objects) {
 	std::list<GameObject>::iterator it = objects->begin();
 	for (; it != objects->end(); it++) {
@@ -436,6 +449,7 @@ void GameWindow::apply_speed_to_object(GameObject* object, int delta_ticks) {
 	object->physics.move(delta_ticks);
 }
 
+/*randomizowanie wielkoœci planet*/
 void GameWindow::resize_planets()
 {
 	int sizes[3][2] = { {40, 40}, {70, 70}, {100, 100} };
@@ -448,6 +462,7 @@ void GameWindow::resize_planets()
 	}
 }
 
+/*funkcja collision*/
 bool GameWindow::rocket_hit_comet() {
 	std::list<GameObject>::iterator comet = comets.begin();
 	bool colision = false;
@@ -458,6 +473,7 @@ bool GameWindow::rocket_hit_comet() {
 	return colision;
 }
 
+/*i jak ona dzia³a*/
 bool GameWindow::objects_collide(GameObject* obj1, GameObject* obj2)
 {
 	bool colision = false;
@@ -467,6 +483,7 @@ bool GameWindow::objects_collide(GameObject* obj1, GameObject* obj2)
 	return colision;
 }
 
+/*pokazanie wyniku*/
 void GameWindow::display_score(bool display_points /*true*/) {
 	SDL_Rect size;
 
@@ -504,6 +521,7 @@ void GameWindow::display_score(bool display_points /*true*/) {
 	}
 }
 
+/*sposób w jaki powstaj¹ particle - ogieñ za rakiet¹*/
 void GameWindow::add_particles(GameObject* rocket)
 {
 	int rand = random(15, 20);
@@ -603,6 +621,7 @@ Particle GameWindow::create_particle(GameObject* rocket)
 	return p;
 }
 
+/*tworzenie okna*/
 std::shared_ptr<GameObject> GameWindow::create_object(int width, int height, Physics physics, SDL_Texture* texture)
 {
 	GameObject *com = new GameObject(width, height, physics, texture);
